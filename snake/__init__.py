@@ -77,7 +77,7 @@ def get_dir(key, direction):
         return (1, 0)
 
 
-def handle_event(event):
+def handle_event(event, direction):
     if event.type == pygame.QUIT:
         pygame.quit()
         exit(0)
@@ -92,37 +92,43 @@ def handle_event(event):
                 return d
 
 
-pygame.init()
-pygame.font.init()
-myfont = pygame.font.SysFont("DejaVu", 42)
-pygame.display.set_mode(size)
-clock = pygame.time.Clock()
-srfc = pygame.display.get_surface()
+def main():
+    global SNAKE_COLOR
 
-snake = Snake([(i, 17) for i in range(10, 3, -1)])
-direction = (1, 0)
-apples = Apples([(5, 5)])
+    pygame.init()
+    pygame.font.init()
+    myfont = pygame.font.SysFont("DejaVu", 42)
+    pygame.display.set_mode(size)
+    clock = pygame.time.Clock()
+    srfc = pygame.display.get_surface()
+
+    snake = Snake([(i, 17) for i in range(10, 3, -1)])
+    direction = (1, 0)
+    apples = Apples([(5, 5)])
+
+    while True:
+        apples.generate()
+        apples.degenerate()
+
+        srfc.fill((0, 0, 0))
+
+        apples.draw(srfc)
+
+        for event in list(pygame.event.get()):
+            nd = handle_event(event, direction)
+            if nd:
+                direction = nd
+            break
+        snake = snake.next_snake(direction, apples)
+        snake.draw(srfc)
+
+        score = myfont.render(f"Score: {len(snake)}", False, (255, 255, 0))
+        srfc.blit(score, (800, 20))
+        clock.tick(len(snake))
+        r = min(255, 100 + len(snake) * 5)
+        SNAKE_COLOR = r, 255 - r, 255 - r
+        pygame.display.flip()
 
 
-while True:
-    apples.generate()
-    apples.degenerate()
-
-    srfc.fill((0, 0, 0))
-
-    apples.draw(srfc)
-
-    for event in list(pygame.event.get()):
-        nd = handle_event(event)
-        if nd:
-            direction = nd
-        break
-    snake = snake.next_snake(direction, apples)
-    snake.draw(srfc)
-
-    score = myfont.render(f"Score: {len(snake)}", False, (255, 255, 0))
-    srfc.blit(score, (800, 20))
-    clock.tick(len(snake))
-    r = min(255, 100 + len(snake) * 5)
-    SNAKE_COLOR = r, 255 - r, 255 - r
-    pygame.display.flip()
+if __name__ == "__main__":
+    main()
