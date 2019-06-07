@@ -6,6 +6,7 @@ size = 1000, 700
 
 SNAKE_COLOR = (0, 0, 0)
 APPLE_COLOR = (100, 255, 80)
+INITIAL_SNAKE_SIZE = 7
 
 
 class Snake(list):
@@ -102,9 +103,14 @@ def main():
     clock = pygame.time.Clock()
     srfc = pygame.display.get_surface()
 
-    snake = Snake([(i, 17) for i in range(10, 3, -1)])
+    snake = Snake([(i, 17) for i in range(10, 10 - INITIAL_SNAKE_SIZE, -1)])
     direction = (1, 0)
     apples = Apples([(5, 5)])
+
+    scores = {
+        score: myfont.render(f"Score: {score-INITIAL_SNAKE_SIZE}", False, (255, 255, 0))
+        for score in range(50)
+    }
 
     while True:
         apples.generate()
@@ -122,9 +128,9 @@ def main():
         snake = snake.next_snake(direction, apples)
         snake.draw(srfc)
 
-        score = myfont.render(f"Score: {len(snake)}", False, (255, 255, 0))
+        score = scores[len(snake)]
         srfc.blit(score, (800, 20))
-        clock.tick(len(snake))
+        clock.tick(min(len(snake), 30))
         r = min(255, 100 + len(snake) * 5)
         SNAKE_COLOR = r, 255 - r, 255 - r
         pygame.display.flip()
