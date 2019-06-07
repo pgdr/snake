@@ -19,13 +19,13 @@ class Snake(list):
         )
 
         if next_head in self:
-            print("collision dead")
+            score = len(self) - INITIAL_SNAKE_SIZE
+            print("You eat yourself.\nScore: {}".format(score))
             pygame.quit()
             exit()
 
         if next_head in apples:
             apples.remove(next_head)
-            print(len(self))
             return Snake([next_head] + self)
         return Snake([next_head] + self[:-1])
 
@@ -108,7 +108,9 @@ def main():
     apples = Apples([(5, 5)])
 
     scores = {
-        score: myfont.render(f"Score: {score-INITIAL_SNAKE_SIZE}", False, (255, 255, 0))
+        score: myfont.render(
+            "Score: {}".format(score - INITIAL_SNAKE_SIZE), False, (255, 255, 0)
+        )
         for score in range(50)
     }
 
